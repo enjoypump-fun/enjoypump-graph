@@ -1,0 +1,115 @@
+type Bonded @entity(immutable: true) {
+  id: Bytes!
+  token: Bytes! # address
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type NewTokenCreated @entity(immutable: true) {
+  id: Bytes!
+  dev: Bytes! # address
+  token: Bytes! # address
+  bondingCurve: Bytes! # address
+  bondingCurveInfo: BondingCurve
+  nonce: BigInt! # uint256
+  projectData: Bytes! # bytes
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type OwnerSet @entity(immutable: true) {
+  id: Bytes!
+  oldOwner: Bytes! # address
+  newOwner: Bytes! # address
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type BondingCurve @entity(immutable: false) {
+  id: Bytes! # contract address
+  token: Bytes!
+  dev: Bytes!
+  totalVolume: BigInt!
+  tradeFee: Int!
+  maxSupplyPerWallet: BigInt!
+  tradeNonce: BigInt!
+  numHolders: BigInt!
+  marketCap: BigInt! # 市值 = 总供应量 * 当前价格
+  totalSupply: BigInt! # 总供应量
+  currentPrice: BigInt! # 当前价格
+  allTimeHighPrice: BigInt! # 历史最高价
+  allTimeLowPrice: BigInt! # 历史最低价
+  highPrice24h: BigInt! # 24小时最高价
+  lowPrice24h: BigInt! # 24小时最低价
+  highPrice7d: BigInt! # 7天最高价
+  lowPrice7d: BigInt! # 7天最低价
+  volume24h: BigInt! # 24小时成交量
+  volume7d: BigInt! # 7天成交量
+  priceChange24h: BigInt! # 24小时价格涨跌额
+  priceChangePercent24h: BigInt! # 24小时价格涨跌百分比（1e6精度）
+  priceChange7d: BigInt! # 7天价格涨跌额
+  priceChangePercent7d: BigInt! # 7天价格涨跌百分比（1e6精度）
+  circulatingSupply: BigInt! # 流通供应量
+  maxSupply: BigInt! # 最大供应量
+  lastMinuteBucketId: String! # 上一个有数据的分钟桶ID
+  lastMinuteClosePrice: BigInt! # 上一个分钟桶的收盘价
+  lastMinuteTradeTimestamp: BigInt! # 上一个分钟桶的最后一笔交易时间戳
+  lastHourBucketId: String! # 上一个有数据的小时桶ID
+  lastHourClosePrice: BigInt! # 上一个小时桶的收盘价
+  lastHourTradeTimestamp: BigInt! # 上一个小时桶的最后一笔交易时间戳
+  createdAt: BigInt!
+  updatedAt: BigInt!
+  newTokenCreated: NewTokenCreated @derivedFrom(field: "bondingCurveInfo")
+}
+
+type BondingCurveTrade @entity(immutable: false) {
+  id: Bytes!
+  bondingCurve: Bytes!
+  type: String! # Buy or Sell
+  ethAmount: BigInt!
+  tokenAmount: BigInt!
+  price: BigInt!
+  timestamp: BigInt!
+  sender: Bytes!
+  transactionHash: Bytes!
+}
+
+type Holder @entity(immutable: false) {
+  id: Bytes! # bonding curve address + holder address
+  bondingCurve: Bytes!
+  address: Bytes!
+  balance: BigInt!
+  createdAt: BigInt!
+  updatedAt: BigInt!
+}
+
+type BondingCurveHourBucket @entity(immutable: false) {
+  id: ID!
+  bondingCurve: Bytes!
+  hour: BigInt!
+  startTimestamp: BigInt!
+  endTimestamp: BigInt!
+  volume: BigInt!
+  high: BigInt!
+  low: BigInt!
+  open: BigInt!
+  close: BigInt!
+  tradeCount: Int!
+}
+
+type BondingCurveMinuteBucket @entity(immutable: false) {
+  id: ID!
+  bondingCurve: Bytes!
+  minute: BigInt!
+  startTimestamp: BigInt!
+  endTimestamp: BigInt!
+  volume: BigInt!
+  high: BigInt!
+  low: BigInt!
+  open: BigInt!
+  close: BigInt!
+  tradeCount: Int!
+}
